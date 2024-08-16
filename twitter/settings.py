@@ -39,10 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-
     'accounts',
-
     'debug_toolbar',
+    'tweets',
 
 ]
 
