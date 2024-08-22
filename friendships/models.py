@@ -24,7 +24,7 @@ class Friendship(models.Model):
     class Meta:
         index_together = (
             ('from_user_id', 'created_at'),
-            {'to_user_id', 'created_at'},
+            ('to_user_id', 'created_at'),
         )
 
         unique_together = (('from_user_id', 'to_user_id'),)
