@@ -8,6 +8,7 @@ from comments.api.serializers import (
     CommentSerializerForCreate,
     CommentSerializerForUpdate
 )
+from utils.decorators import required_params
 
 class CommentViewSet(viewsets.GenericViewSet):
 
@@ -23,15 +24,16 @@ class CommentViewSet(viewsets.GenericViewSet):
             return [IsAuthenticated(), IsObjectOwner(),]
         return [AllowAny()]
 
+    @required_params(params=['tweet_id'])
     def list(self, request, *args, **kwargs):
-        if 'tweet_id' not in request.query_params:
-            return Response(
-                {
-                    'message': 'missing tweet_id in request',
-                    'success': False,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # if 'tweet_id' not in request.query_params:
+        #     return Response(
+        #         {
+        #             'message': 'missing tweet_id in request',
+        #             'success': False,
+        #         },
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
         # tweet_id = request.query_params['tweet_id']
         # comments = Comment.objects.filter(tweet_id=tweet_id)
         # serializer = CommentSerializer(comments, many=True)
