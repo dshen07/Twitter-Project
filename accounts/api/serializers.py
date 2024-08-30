@@ -22,6 +22,11 @@ class UserSerializerForComment(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ('id', 'username',)
 
+class UserSerializerForLike(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username',)
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
