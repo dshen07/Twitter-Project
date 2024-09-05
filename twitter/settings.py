@@ -42,11 +42,14 @@ INSTALLED_APPS = [
     'accounts',
     'debug_toolbar',
     'django_filters',
+    'notifications',
+
     'tweets',
     'friendships',
     'newsfeeds',
     'comments',
     'likes',
+    'inbox',
 ]
 
 REST_FRAMEWORK = {
