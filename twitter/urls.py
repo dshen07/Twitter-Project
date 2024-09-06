@@ -25,6 +25,7 @@ from newsfeeds.api.views import NewsFeedViewSet
 from tweets.api.views import TweetViewSet
 from comments.api.views import CommentViewSet
 from inbox.api.views import NotificationViewSet
+from accounts.api.views import UserProfileViewSet
 
 router = routers.DefaultRouter()
 router.register(r'api/users', views.UserViewSet)
@@ -35,6 +36,7 @@ router.register(r'api/newsfeeds', NewsFeedViewSet, basename='newsfeeds')
 router.register(r'api/comments', CommentViewSet, basename='comments')
 router.register(r'api/likes', LikeViewSet, basename='likes')
 router.register(r'api/notifications', NotificationViewSet, basename='notifications')
+router.register(r'api/profiles', UserProfileViewSet, basename='profiles')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
