@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from tweets.api.serializers import TweetSerializer, TweetCreateSerializer, TweetSerializerForDetail
+from tweets.api.serializers import TweetSerializer, TweetSerializerForCreate, TweetSerializerForDetail
 from tweets.models import Tweet
 from newsfeeds.services import NewsFeedService
 from utils.decorators import required_params
@@ -9,7 +9,7 @@ from utils.decorators import required_params
 class TweetViewSet(viewsets.GenericViewSet,
                    viewsets.mixins.ListModelMixin,
                    viewsets.mixins.CreateModelMixin):
-    serializer_class = TweetCreateSerializer
+    serializer_class = TweetSerializerForCreate
     queryset = Tweet.objects.all()
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
@@ -39,7 +39,7 @@ class TweetViewSet(viewsets.GenericViewSet,
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        serializer = TweetCreateSerializer(
+        serializer = TweetSerializerForCreate(
             data=request.data,
             context={'request': request},
         )
