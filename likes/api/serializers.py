@@ -5,13 +5,16 @@ from tweets.models import Tweet
 from comments.models import Comment
 from rest_framework.exceptions import ValidationError
 from accounts.api.serializers import UserSerializerForLike
+from accounts.services import UserService
 
 class LikeSerializer(serializers.ModelSerializer):
-    user = UserSerializerForLike()
+    user = UserSerializerForLike(source='cached_user')
 
     class Meta:
         model = Like
         fields = ('user', 'created_at')
+
+
 
 class BaseLikeSerializerForCreateAndCancel(serializers.ModelSerializer):
     content_type = serializers.ChoiceField(choices=['comment', 'tweet'])
