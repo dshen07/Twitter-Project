@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from tweets.api.serializers import TweetSerializer, TweetSerializerForCreate, TweetSerializerForDetail
 from tweets.models import Tweet
+from tweets.services import TweetService
 from utils.decorators import required_params
 from utils.paginations import EndlessPagination
 
@@ -22,9 +23,8 @@ class TweetViewSet(viewsets.GenericViewSet,
     def list(self, request, *args, **kwargs):
         # if 'user_id' not in request.query_params:
         #     return Response('missing user_id', status=400)
-        tweets = Tweet.objects.filter(
-            user_id=request.query_params['user_id']
-        ).order_by('-created_at')
+        user_id = request.query_params['user_id']
+        tweets = TweetService.get_cached_tweets(user_id)
         tweets = self.paginate_queryset(tweets)
         serializer = TweetSerializer(
             tweets,
