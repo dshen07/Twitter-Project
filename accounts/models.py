@@ -4,6 +4,12 @@ from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from utils.listeners import invalidate_object_cache
 
+
+ # model objects in django are wither created by
+ # model.object.create or model()
+ # the first kind is linked to db
+ # the second kind is not (normal object)
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
     avatar = models.FileField(null=True)
