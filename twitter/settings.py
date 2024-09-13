@@ -187,6 +187,7 @@ REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
 REDIS_DB = 0 if TESTING else 1
 REDIS_KEY_EXPIRE_TIME = 7 * 86400  # in seconds
+REDIS_LIST_LENGTH_LIMIT = 1000 if not TESTING else 20
 
 # 你还需要在 local_settings.py 中设置你的 AWS_ACCESS_KEY_ID 和 AWS_SECRET_ACCESS_KEY
 # 因为这是比较机密的信息，是不适合放在 settings.py 这种共享的配置文件中共享给所有开发者的
