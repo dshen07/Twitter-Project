@@ -8,7 +8,8 @@ class TweetAdmin(admin.ModelAdmin):
     list_display = (
         'created_at',
         'user',
-        'content'
+        'content',
+        'likes_count'
     )
 
 @admin.register(TweetPhoto)
