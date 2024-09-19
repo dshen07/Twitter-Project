@@ -189,6 +189,14 @@ REDIS_DB = 0 if TESTING else 1
 REDIS_KEY_EXPIRE_TIME = 7 * 86400  # in seconds
 REDIS_LIST_LENGTH_LIMIT = 1000 if not TESTING else 20
 
+
+# Celery Configuration Options
+# 使用如下命令把 worker 进程（只执行异步任务的进程，可以在不同的机器上）单独跑起来
+#   celery -A twitter worker -l INFO
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/2' if not TESTING else 'redis://127.0.0.1:6379/0'
+CELERY_TIMEZONE = "UTC"
+CELERY_TASK_ALWAYS_EAGER = TESTING
+
 # 你还需要在 local_settings.py 中设置你的 AWS_ACCESS_KEY_ID 和 AWS_SECRET_ACCESS_KEY
 # 因为这是比较机密的信息，是不适合放在 settings.py 这种共享的配置文件中共享给所有开发者的
 # 真实的开发场景下，可以使用 local_settings.py 的方式，或者设置在环境变量里的方式
