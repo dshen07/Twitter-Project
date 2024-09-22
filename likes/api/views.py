@@ -10,6 +10,8 @@ from likes.api.serializers import (
     LikeSerializerForCreate,
     LikeSerializerForCancel,
 )
+from django.utils.decorators import method_decorator
+from ratelimit.decorators import ratelimit
 
 class LikeViewSet(viewsets.GenericViewSet):
     queryset = Like.objects.all()
@@ -17,6 +19,7 @@ class LikeViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
 
     @required_params(method='POST', params=['content_type', 'object_id'])
+    @method_decorator(ratelimit(key='user', rate='10/s', method='POST', block=True))
     def create(self, request, *args, **kwargs):
         serializer = LikeSerializerForCreate(
             data=request.data,
@@ -39,6 +42,7 @@ class LikeViewSet(viewsets.GenericViewSet):
 
     @action(methods=['POST'], detail=False)
     @required_params(method='POST', params=['content_type', 'object_id'])
+    @method_decorator(ratelimit(key='user', rate='10/s', method='POST', block=True))
     def cancel(self, request):
         serializer = LikeSerializerForCancel(
             data=request.data,
