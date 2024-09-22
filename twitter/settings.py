@@ -61,6 +61,7 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
+    'EXCEPTION_HANDLER': 'utils.ratelimit.exception_handler',
 }
 
 INTERNAL_IPS = ['10.0.2.2']
@@ -179,6 +180,12 @@ CACHES = {
         'TIMEOUT': 86400,
         'KEY_PREFIX': 'testing',
     },
+    'ratelimit': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+        'TIMEOUT': 86400 * 7,
+        'KEY_PREFIX': 'rl',
+    },
 }
 
 # Redis
@@ -201,6 +208,11 @@ CELERY_QUEUES = (
     Queue('default', routing_key='default'),
     Queue('newsfeeds', routing_key='newsfeeds'),
 )
+
+# Rate Limit
+RATELIMIT_USE_CACHE = 'ratelimit'
+RATELIMIT_CACHE_PREFIX = 'rl:'
+RATELIMIT_ENABLE = not TESTING
 
 # 你还需要在 local_settings.py 中设置你的 AWS_ACCESS_KEY_ID 和 AWS_SECRET_ACCESS_KEY
 # 因为这是比较机密的信息，是不适合放在 settings.py 这种共享的配置文件中共享给所有开发者的

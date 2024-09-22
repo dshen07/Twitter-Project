@@ -18,6 +18,8 @@ from accounts.api.serializers import (
     UserSerializerWithProfile,
 )
 from accounts.models import UserProfile
+from django.utils.decorators import method_decorator
+from ratelimit.decorators import ratelimit
 
 
 # Create your views here.
@@ -35,6 +37,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class AccountViewSet(viewsets.ViewSet):
     serializer_class = SignupSerializer
     @action(methods=['GET'], detail=False)
+    @method_decorator(ratelimit(key='ip', rate='3/s', method='GET', block=True))
     def login_status(self, request):
         data = {'has_logged_in': request.user.is_authenticated,
                 'IP': request.META['REMOTE_ADDR'],}
@@ -43,11 +46,13 @@ class AccountViewSet(viewsets.ViewSet):
         return Response(data)
 
     @action(methods=['POST'], detail=False)
+    @method_decorator(ratelimit(key='ip', rate='3/s', method='POST', block=True))
     def logout(self, request):
         django_logout(request)
         return Response({'success': True})
 
     @action(methods=['POST'], detail=False)
+    @method_decorator(ratelimit(key='ip', rate='3/s', method='POST', block=True))
     def login(self, reqeust):
         serializer = LoginSerializer(data=reqeust.data)
         if not serializer.is_valid():
@@ -75,6 +80,7 @@ class AccountViewSet(viewsets.ViewSet):
         })
 
     @action(methods=['POST'], detail=False)
+    @method_decorator(ratelimit(key='ip', rate='3/s', method='POST', block=True))
     def signup(self, request):
         serializer = SignupSerializer(data=request.data)
         if not serializer.is_valid():
