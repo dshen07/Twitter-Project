@@ -188,6 +188,9 @@ CACHES = {
     },
 }
 
+# HBase Database
+HBASE_HOST = '127.0.0.1'
+
 # Redis
 # 安装方法: sudo apt-get install redis
 # 然后安装 redis 的 python 客户端： pip install redis
