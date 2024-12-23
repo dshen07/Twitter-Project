@@ -90,3 +90,85 @@ class HBaseTests(TestCase):
             exception_raised = True
             self.assertEqual(str(e), 'created_at is missing in row key')
         self.assertEqual(exception_raised, True)
+
+    def test_filter(self):
+        HBaseFollowing.create(from_user_id=1, to_user_id=2, created_at=self.ts_now)
+        HBaseFollowing.create(from_user_id=1, to_user_id=3, created_at=self.ts_now)
+        HBaseFollowing.create(from_user_id=1, to_user_id=4, created_at=self.ts_now)
+
+        followings = HBaseFollowing.filter(prefix=(1, None))
+        self.assertEqual(3, len(followings))
+        self.assertEqual(followings[0].from_user_id, 1)
+        self.assertEqual(followings[0].to_user_id, 2)
+        self.assertEqual(followings[1].from_user_id, 1)
+        self.assertEqual(followings[1].to_user_id, 3)
+        self.assertEqual(followings[2].from_user_id, 1)
+        self.assertEqual(followings[2].to_user_id, 4)
+
+        # test limit
+        results = HBaseFollowing.filter(prefix=(1, None), limit=1)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].to_user_id, 2)
+
+        results = HBaseFollowing.filter(prefix=(1, None), limit=2)
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].to_user_id, 2)
+        self.assertEqual(results[1].to_user_id, 3)
+
+        results = HBaseFollowing.filter(prefix=(1, None), limit=4)
+        self.assertEqual(len(results), 3)
+        self.assertEqual(results[0].to_user_id, 2)
+        self.assertEqual(results[1].to_user_id, 3)
+        self.assertEqual(results[2].to_user_id, 4)
+
+        results = HBaseFollowing.filter(start=(1, results[1].created_at), limit=2)
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].to_user_id, 3)
+        self.assertEqual(results[1].to_user_id, 4)
+
+        # test reverse
+        results = HBaseFollowing.filter(prefix=(1, None), limit=2, reverse=True)
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].to_user_id, 4)
+        self.assertEqual(results[1].to_user_id, 3)
+
+        results = HBaseFollowing.filter(start=(1, results[1].created_at), limit=2, reverse=True)
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].to_user_id, 3)
+        self.assertEqual(results[1].to_user_id, 2)
+
+    def test_get_or_create(self):
+        followings = HBaseFollowing.filter()
+        self.assertEqual(len(followings), 0)
+
+        ts1 = self.ts_now
+        HBaseFollowing.create(from_user_id=1, to_user_id=2, created_at=ts1)
+        ts2 = self.ts_now
+        HBaseFollowing.create(from_user_id=1, to_user_id=3, created_at=ts2)
+
+        followings = HBaseFollowing.filter()
+        self.assertEqual(len(followings), 2)
+
+        instance = HBaseFollowing.get_or_create(from_user_id=1, created_at=ts1)
+        self.assertEqual(instance.created_at, ts1)
+        self.assertEqual(instance.from_user_id, 1)
+        self.assertEqual(instance.to_user_id, 2)
+
+        instance = HBaseFollowing.get_or_create(from_user_id=1, created_at=ts2)
+        self.assertEqual(instance.created_at, ts2)
+        self.assertEqual(instance.from_user_id, 1)
+        self.assertEqual(instance.to_user_id, 3)
+
+        followings = HBaseFollowing.filter()
+        self.assertEqual(len(followings), 2)
+
+        ts3 = self.ts_now
+        HBaseFollowing.get_or_create(from_user_id=1, to_user_id=4, created_at=ts3)
+
+        followings = HBaseFollowing.filter()
+        self.assertEqual(len(followings), 3)
+
+        instance = HBaseFollowing.get_or_create(from_user_id=1, created_at=ts3)
+        self.assertEqual(instance.created_at, ts3)
+        self.assertEqual(instance.from_user_id, 1)
+        self.assertEqual(instance.to_user_id, 4)
