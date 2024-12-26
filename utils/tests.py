@@ -6,7 +6,7 @@ class UtilsTests(TestCase):
 
     def setUp(self):
         # RedisClient.clear()
-        self.clear_cache()
+        super(UtilsTests, self).setUp()
     def test_redis_client(self):
         conn = RedisClient.get_connection()
         conn.lpush('redis_key', 1)
