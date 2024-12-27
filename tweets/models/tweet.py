@@ -1,12 +1,8 @@
-# Create your models here.
-from accounts.services import UserService
-from datetime import datetime
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from likes.models import Like
-from tweets.constants import (TweetPhotoStatus, TWEET_PHOTO_STATUS_CHOICES)
 from tweets.listeners import push_tweet_to_cache
 from utils.listeners import invalidate_object_cache
 from utils.memcached_helper import MemcachedHelper
@@ -52,30 +48,3 @@ class Tweet(models.Model):
 pre_delete.connect(invalidate_object_cache, sender=Tweet)
 post_save.connect(invalidate_object_cache, sender=Tweet)
 post_save.connect(push_tweet_to_cache, sender=Tweet)
-
-class TweetPhoto(models.Model):
-    tweet = models.ForeignKey(Tweet, on_delete=models.SET_NULL, null=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-
-    file = models.FileField()
-    order = models.IntegerField(default=0)
-
-    status = models.IntegerField(
-        default=TweetPhotoStatus.PENDING,
-        choices=TWEET_PHOTO_STATUS_CHOICES,
-    )
-
-    has_deleted = models.BooleanField(default=False)
-    deleted_at = models.DateTimeField(null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        index_together = (
-            ('user', 'created_at'),
-            ('tweet', 'order'),
-            ('has_deleted', 'created_at'),
-            ('status', 'created_at'),
-        )
-
-    def __str__(self):
-        return f'{self.tweet_id}: {self.file}'
