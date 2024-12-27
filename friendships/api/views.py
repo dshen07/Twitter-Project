@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from friendships.models import Friendship
+from friendships.models import Friendship, HBaseFollowing, HBaseFollower
 from friendships.api.serializers import (
     FollowingSerializer,
     FollowerSerializer,
@@ -15,7 +15,6 @@ from ratelimit.decorators import ratelimit
 from friendships.services import FriendshipService
 from utils.paginations import EndlessPagination
 from gatekeeper.models import GateKeeper
-from friendships.hbase_models import HBaseFollowing, HBaseFollower
 
 class FriendshipViewSet(viewsets.GenericViewSet):
     queryset = User.objects.all()
